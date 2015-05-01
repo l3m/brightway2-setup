@@ -4,5 +4,8 @@ include
 lib
 man
 brightway2*
+aveny-lca
 
 .vagrant
+ecoinvent
+output
