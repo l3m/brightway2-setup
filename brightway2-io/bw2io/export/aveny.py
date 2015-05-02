@@ -10,31 +10,9 @@ import uuid
 units = set()
 types = set()
 
-def get_or_create_exchange(exch_by_uuid, factory, ex):
-    index = len(exch_by_uuid)
-    uid = uuid.UUID(ex["flow"])
-
-    if uid in exch_by_uuid:
-        return exch_by_uuid[uid]
-
-    e = factory.create_exchange(index, uid)
-    e.name = ex["name"]
-    e.tmp_unit = ex["unit"]
-    units.add(e.tmp_unit)
-    e.tmp_type = ex["type"]
-    types.add(e.tmp_type)
-
-    if "formula" in ex:
-        ex.formula = ex["formula"]
-
-    exch_by_uuid[uid] = e
-
-    return e
-
 def export_to_aveny(data, inv, factory):
 
     activities = list()
-    exchanges = list()
     methods = list()
 
     exch_by_uuid = {}
@@ -42,10 +20,10 @@ def export_to_aveny(data, inv, factory):
     activity_count = 0
 
     for src_a in data:
-        a = factory.create_activity(activity_count, uuid.UUID(src_a["activity"]))
+        a = factory.create_activity(activity_count, uuid.UUID(src_a["flow"]))
 
         a.description = src_a["comment"]
-        a.name = src_a["name"]
+        a.name = src_a["reference product"]
 
         cats = src_a["classifications"]
         for cc in cats:
@@ -56,14 +34,33 @@ def export_to_aveny(data, inv, factory):
         if src_a["type"] == "process":
             a.process_type = 0
 
-        a.tmp_exchanges = list()
-
-        for src_e in src_a["exchanges"]:
-            e = get_or_create_exchange(exch_by_uuid, factory, src_e)
-            a.tmp_exchanges.append((e, src_e["amount"]))
-
         activities.append(a)
         activity_count += 1
 
-    for a in activities:
-        print(a)
+    inv.activities = factory.create_activities(activities)
+
+    # now we have all activities
+    for src_a in data:
+        uid = uuid.UUID(src_a["flow"])
+        a = inv.activities.by_uid(uid)
+        if a is None:
+            raise NameError()
+
+        a.tmp_activities = list()
+        a.tmp_exchanges = list()
+
+        for ex in src_a["exchanges"]:
+            xuid = uuid.UUID(ex["flow"])
+            amount = ex["amount"]
+            if ex["type"] == "biosphere":
+                ee = inv.exchanges.by_uid(xuid)
+                a.tmp_exchanges.append((ee, amount))
+            else:
+                aa = inv.activities.by_uid(xuid)
+                a.tmp_activities.append((aa, amount))
+
+
+    for a in inv.activities:
+        if not hasattr(a, "tmp_activities"):
+            print("no activities")
+        print( a.name + " has " + str(len(a.tmp_activities)) + " technosphere and " + str(len(a.tmp_exchanges)) + " biosphere refs.")
