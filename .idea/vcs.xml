@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/aveny-lca" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/brightway2-calc" vcs="hg4idea" />
     <mapping directory="$PROJECT_DIR$/brightway2-data" vcs="hg4idea" />
     <mapping directory="$PROJECT_DIR$/brightway2-io" vcs="hg4idea" />
