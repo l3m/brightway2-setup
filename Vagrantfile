@@ -68,10 +68,6 @@ Vagrant.configure(2) do |config|
     sudo apt-get update
     sudo apt-get install -y python2.7 python-pip python2.7-dev python-lxml python2.7-numpy python2.7-scipy
     sudo apt-get install -y python-jinja2 python-flask
-    pip install stats-arrays==0.3.2
-    pip install -r /vagrant/brightway2-calc/requirements.txt
-    pip install -r /vagrant/brightway2-data/requirements.txt
-    pip install -r /vagrant/brightway2-parameters/requirements.txt
-    pip install -r /vagrant/brightway2-io/requirements.txt
+    pip install -r requirements.txt
   SHELL
 end
